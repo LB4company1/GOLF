@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLF - Discord Community</title>
+    <!-- Fonts & preloads for remastered site -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Poppins:wght@500;600;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="bg.gif" as="image">
+    <link rel="preload" href="discord.png" as="image">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --panel: rgba(15,15,15,0.85);
+            --accent: #00ffff;
+            --muted: #bdbdbd;
+            --glass-border: rgba(0,255,255,0.12);
+            --radius: 18px;
+            --shadow: 0 18px 60px rgba(0,0,0,0.6);
+            --transition: 350ms cubic-bezier(.2,.9,.3,1);
+            --max-width: 1100px;
+        }
+
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{height:100%}
+
+        body {
+            font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            overflow-x: hidden;
+            background: var(--bg);
+            color: #fff;
+            line-height: 1.45;
+        }
+
+        a, button { color: inherit; }
+        img { display:block; max-width:100%; height:auto }
+
+        :focus { outline: 3px solid rgba(0,255,255,0.12); outline-offset: 3px; border-radius: 6px }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.001ms !important; transition: none !important }
+        }
+
+        .video-background {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.15));
+        }
+
+        .video-background img,
+        .video-background video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.55;
+            filter: contrast(0.96) saturate(1.02) brightness(0.95);
+            transition: opacity 450ms var(--transition);
+            will-change: transform, opacity;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.03), rgba(10, 10, 10, 0.6));
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Intro overlay */
+        .intro {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            z-index: 9999;
+        }
+
+        .intro-inner {
+            text-align: center;
+            will-change: transform, opacity;
+        }
+
+        .intro-title {
+            color: var(--accent);
+            font-size: clamp(2rem, 9vw, 5rem);
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            font-weight: 800;
+            opacity: 0;
+            transform: translateY(6px) scale(0.6);
+            text-shadow: 0 18px 80px rgba(0, 255, 255, 0.06);
+            animation: introSequence 2.4s cubic-bezier(.22,.9,.38,1) forwards;
+        }
+
+        .intro-subtitle {
+            color: var(--muted);
+            font-size: clamp(0.9rem, 3vw, 1.4rem);
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(8px);
+            letter-spacing: 2px;
+            font-weight: 500;
+            animation: subtitleFade 2.4s cubic-bezier(.22,.9,.38,1) forwards;
+            animation-delay: 0.25s;
+        }
+
+        .intro-skip {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 180ms ease, opacity 180ms ease;
+            z-index: 10001;
+        }
+
+        .intro-skip:hover { transform: translateY(-3px); }
+
+        @keyframes introSequence {
+            0% { opacity: 0; transform: translateY(6px) scale(0.6); }
+            45% { opacity: 1; transform: translateY(0) scale(1.12); }
+            70% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-140%) scale(0.85); }
+        }
+
+        @keyframes subtitleFade {
+            0% { opacity: 0; transform: translateY(8px); }
+            45% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-140%); }
+        }
+
+        body.intro-active { overflow: hidden; }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.6s cubic-bezier(.2,.9,.3,1);
+        }
+
+        /* After intro completes, move content to top like default */
+        body.intro-complete .container { justify-content: flex-start; padding-top: 40px }
+
+        .company-name { opacity: 0; transform: translateY(-10px); transition: opacity 0.6s ease, transform 0.6s ease }
+        body.intro-complete .company-name { opacity: 1; transform: translateY(0) }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .company-name {
+            font-size: 1.8em;
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .author {
+            font-size: 1em;
+            color: #888;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .logo-section {
+            margin-bottom: 50px;
+            animation: fadeInScale 1s ease 0.3s both;
+        }
+
+        .logo {
+            width: 180px;
+            height: 180px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            object-fit: cover;
+        }
+
+        .logo:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 255, 255, 0.5);
+            border-color: rgba(0, 255, 255, 0.6);
+        }
+
+        .main-content {
+            background: linear-gradient(180deg, rgba(18,18,18,0.85), rgba(10,10,10,0.7));
+            backdrop-filter: blur(18px);
+            border-radius: var(--radius);
+            padding: clamp(30px, 6vw, 64px) clamp(20px, 6vw, 64px);
+            max-width: var(--max-width);
+            width: 100%;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 900ms cubic-bezier(.2,.9,.3,1) 0.45s both;
+        }
+
+        h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #999;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+
+        .feature {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(10, 10, 10, 0.8));
+            padding: 35px 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature:hover::before {
+            left: 100%;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            filter: brightness(0) saturate(100%) invert(71%) sepia(85%) saturate(2468%) hue-rotate(143deg) brightness(103%) contrast(106%);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover .feature-icon {
+            transform: scale(1.1);
+        }
+
+        .feature h3 {
+            font-size: 1.4em;
+            margin-bottom: 12px;
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: #888;
+            font-size: 1em;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .join-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00ffff, #00cccc);
+            color: #0a0a0a;
+            padding: 22px 70px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-top: 40px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .join-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.6);
+            background: linear-gradient(135deg, #00cccc, #00ffff);
+        }
+
+        .button-container { text-align:center }
+
+        /* Top-fixed Discord image button */
+        .discord-top-button { position: fixed; top: 18px; right: 18px; z-index: 10010; width:64px; height:64px; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#5865f2,#2f3136); border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.6); padding:6px; transition: transform 0.18s var(--transition), box-shadow 0.18s var(--transition); cursor:pointer }
+        .discord-top-button img{ width:100%; height:100%; object-fit:contain; display:block }
+        .discord-top-button:hover{ transform:translateY(-4px) scale(1.03); box-shadow:0 18px 46px rgba(20,20,20,0.5) }
+        .discord-top-button:focus{ box-shadow: 0 0 0 4px rgba(0,255,255,0.06), 0 18px 46px rgba(20,20,20,0.4) }
+
+        /* Language switcher */
+        .lang-switch { position: fixed; top: 18px; left: 18px; z-index:10020; display:flex; align-items:center; gap:8px; opacity:0; transform:translateY(-6px); transition: all 240ms var(--transition); pointer-events:none }
+        .intro-complete .lang-switch { opacity:1; transform:none; pointer-events:auto }
+        .lang-btn { background: rgba(255,255,255,0.03); color:var(--muted); border: none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600 }
+        .lang-btn:hover { transform: translateY(-2px) }
+        .lang-menu { display:none; position:absolute; top:44px; left:0; background: rgba(10,10,10,0.98); border:1px solid rgba(255,255,255,0.04); padding:8px; border-radius:10px; box-shadow: 0 14px 40px rgba(0,0,0,0.6) }
+        .lang-menu button { display:block; background:transparent; color:#fff; border:none; padding:8px 12px; text-align:left; width:100%; cursor:pointer }
+        .lang-menu button:hover { background: rgba(255,255,255,0.02) }
+        .lang-switch[aria-expanded="true"] .lang-menu { display:block }
+
+        @keyframes fadeIn{ from{ opacity:0; transform:translateY(-30px)} to{ opacity:1; transform:translateY(0)} }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .company-name {
+                font-size: 1.3em;
+                letter-spacing: 4px;
+            }
+
+            h1 {
+                font-size: 2.5em;
+                letter-spacing: 2px;
+            }
+            
+            .main-content {
+                padding: 40px 25px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .join-button {
+                padding: 18px 50px;
+                font-size: 1.1em;
+            }
+
+            .logo {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body class="intro-active">
+    <div class="intro" role="dialog" aria-modal="true" aria-label="Intro" data-intro>
+        <div class="intro-inner">
+            <div class="intro-title">LB4 COMPANY</div>
+            <div class="intro-subtitle">Presents...</div>
+        </div>
+        <button class="intro-skip" aria-label="Skip intro">Skip</button>
+    </div>
+
+    <div class="video-background" aria-hidden="true">
+        <img src="bg.gif" alt="Background animation" aria-hidden="true" loading="eager">
+    </div>
+    <div class="overlay"></div>
+
+    <a href="https://discord.gg/MVdrHMxE3m" class="discord-top-button" target="_blank" rel="noopener noreferrer" aria-label="Join Discord">
+        <img src="discord.png" alt="Discord">
+    </a>
+
+    <!-- Language switcher (appears after intro) -->
+    <div class="lang-switch" aria-hidden="true">
+        <button class="lang-btn" aria-haspopup="true" aria-expanded="false" aria-label="Language menu">ENG ▾</button>
+        <div class="lang-menu" role="menu" aria-hidden="true">
+            <button role="menuitem" data-lang="en">English</button>
+            <button role="menuitem" data-lang="fr">Français</button>
+            <button role="menuitem" data-lang="ar">العربية</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="company-name" data-i18n="companyName">LB4 COMPANY</div>
+            <div class="author" data-i18n="author">By: Leo Mh</div>
+        </div>
+
+        <div class="logo-section">
+            <img src="logo.png" alt="GOLF Logo" class="logo">
+        </div>
+
+        <div class="main-content">
+            <h1 data-i18n="headline">GOLF</h1>
+            <p class="subtitle" data-i18n="subtitle">
+                A modern community for gaming, communication and entertainment.<br>
+                Join us for a unique experience.
+            </p>
+
+            <div class="features">
+                <div class="feature" data-index="0">
+                    <img src="games.png" class="feature-icon" alt="Games">
+                    <h3 data-i18n="features.0.title">Play with us</h3>
+                    <p data-i18n="features.0.text">Enjoy top games with an active, fun community.</p>
+                </div>
+
+                <div class="feature" data-index="1">
+                    <img src="https://cdn-icons-png.flaticon.com/512/681/681494.png" alt="Friends" class="feature-icon">
+                    <h3 data-i18n="features.1.title">Make friends</h3>
+                    <p data-i18n="features.1.text">Build new lasting friendships with members worldwide.</p>
+                </div>
+
+                <div class="feature" data-index="2">
+                    <img src="event.png" alt="Events" class="feature-icon">
+                    <h3 data-i18n="features.2.title">Exclusive events</h3>
+                    <p data-i18n="features.2.text">Participate in contests and special events.</p>
+                </div>
+
+                <div class="feature" data-index="3">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2917/2917995.png" alt="Relax" class="feature-icon">
+                    <h3 data-i18n="features.3.title">Relax & enjoy</h3>
+                    <p data-i18n="features.3.text">A cozy space for chatting and relaxing.</p>
+                </div>
+                <div class="feature" data-index="4">
+                    <img src="verify.png" alt="Secured" class="feature-icon">
+                    <h3 data-i18n="features.4.title">Secured</h3>
+                    <p data-i18n="features.4.text">A trustworthy and secure community.</p>
+                </div>
+                <div class="feature" data-index="5">
+                    <img src="verified.png" alt="Verify System" class="feature-icon">
+                    <h3 data-i18n="features.5.title">Verify system</h3>
+                    <p data-i18n="features.5.text">Identity verification system for a secure experience.</p>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <!-- Discord button moved to top-fixed image (discord.png) -->
+            </div> 
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            /* Intro handling + language system */
+            var intro = document.querySelector('.intro');
+            var skipBtn = document.querySelector('.intro-skip');
+            var removed = false;
+
+            // Translation strings
+            var i18n = {
+                en: {
+                    companyName: 'LB4 COMPANY',
+                    author: 'By: Leo Mh',
+                    headline: 'GOLF',
+                    subtitle: 'A modern community for gaming, communication and entertainment.<br>Join us for a unique experience.',
+                    features: [
+                        ['Play with us', 'Enjoy top games with an active, fun community.'],
+                        ['Make friends', 'Build new lasting friendships with members worldwide.'],
+                        ['Exclusive events', 'Participate in contests and special events.'],
+                        ['Relax & enjoy', 'A cozy space for chatting and relaxing.'],
+                        ['Secured', 'A trustworthy and secure community.'],
+                        ['Verify system', 'Identity verification system for a secure experience.']
+                    ]
+                },
+                fr: {
+                    companyName: 'LB4 COMPANY',
+                    author: 'Par: Leo Mh',
+                    headline: 'GOLF',
+                    subtitle: 'Une communauté moderne pour les jeux, la communication et le divertissement.<br>Rejoignez-nous pour une expérience unique.',
+                    features: [
+                        ['Jouez avec nous', 'Profitez des meilleurs jeux avec une communauté active et amusante.'],
+                        ['Faites des amis', 'Créez de nouvelles amitiés durables avec des membres du monde entier.'],
+                        ['Événements exclusifs', 'Participez à des concours et événements spéciaux.'],
+                        ['Détendez-vous & profitez', 'Un espace convivial pour discuter et se détendre.'],
+                        ['Vérifié', 'Une communauté fiable et sécurisée.'],
+                        ['Système de vérification', 'Système de vérification d\'identité pour une expérience sécurisée.']
+                    ]
+                },
+                ar: {
+                    companyName: 'شركة LB4',
+                    author: 'بواسطة: ليو إم إتش',
+                    headline: 'جولف',
+                    subtitle: 'مجتمع حديث للألعاب والتواصل والترفيه.<br>انضم إلينا لتجربة فريدة.',
+                    features: [
+                        ['العب معنا', 'استمتع بأفضل الألعاب مع مجتمع نشط وممتع.'],
+                        ['تعرف على أصدقاء', 'بناء صداقات جديدة ودائمة مع أعضاء من كل مكان.'],
+                        ['فعاليات حصرية', 'شارك في المسابقات والفعاليات المميزة.'],
+                        ['استرح واستمتع', 'مساحة مريحة للدردشة والاسترخاء.'],
+                        ['موثوق', 'مجتمع آمن وموثوق.'],
+                        ['نظام تحقق', 'نظام تحقق من الهوية لتجربة آمنة']
+                    ]
+                }
+            };
+
+            function applyLanguage(lang){
+                var data = i18n[lang] || i18n.en;
+                // set lang & dir on document
+                document.documentElement.lang = lang;
+                document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+                // apply texts
+                var elCompany = document.querySelector('[data-i18n="companyName"]'); if (elCompany) elCompany.textContent = data.companyName;
+                var elAuthor = document.querySelector('[data-i18n="author"]'); if (elAuthor) elAuthor.textContent = data.author;
+                var elHeadline = document.querySelector('[data-i18n="headline"]'); if (elHeadline) elHeadline.textContent = data.headline;
+                var elSubtitle = document.querySelector('[data-i18n="subtitle"]'); if (elSubtitle) elSubtitle.innerHTML = data.subtitle;
+                // features
+                var features = document.querySelectorAll('.feature');
+                features.forEach(function(f, idx){
+                    var t = data.features[idx];
+                    if (!t) return;
+                    var h = f.querySelector('h3'); if (h) h.textContent = t[0];
+                    var p = f.querySelector('p'); if (p) p.textContent = t[1];
+                });
+                // update lang button label
+                var btn = document.querySelector('.lang-btn'); if (btn) btn.textContent = (lang==='en'? 'ENG' : (lang==='fr'? 'FRA' : 'ع')); 
+                // save
+                localStorage.setItem('siteLang', lang);
+            }
+
+            // language menu interactions
+            var langSwitch = document.querySelector('.lang-switch');
+            var langBtn = document.querySelector('.lang-btn');
+            var langMenu = document.querySelector('.lang-menu');
+            if (langBtn){
+                langBtn.addEventListener('click', function(){
+                    var expanded = langBtn.getAttribute('aria-expanded') === 'true';
+                    langBtn.setAttribute('aria-expanded', String(!expanded));
+                    langSwitch.setAttribute('aria-expanded', String(!expanded));
+                    langMenu.setAttribute('aria-hidden', String(expanded));
+                });
+            }
+            if (langMenu){
+                langMenu.addEventListener('click', function(e){
+                    var t = e.target; if (t && t.dataset && t.dataset.lang){ applyLanguage(t.dataset.lang); langBtn.setAttribute('aria-expanded','false'); langSwitch.setAttribute('aria-expanded','false'); langMenu.setAttribute('aria-hidden','true'); }
+                });
+            }
+
+            function removeIntro(){ if (removed) return; removed = true; document.body.classList.add('intro-complete'); document.body.classList.remove('intro-active'); if (intro && intro.parentNode) intro.parentNode.removeChild(intro); try { window.scrollTo({ top:0, behavior:'instant' }); } catch(e){ window.scrollTo(0,0); } }
+            document.body.classList.add('intro-active');
+            if (skipBtn) skipBtn.addEventListener('click', removeIntro);
+            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') removeIntro(); });
+            if (intro){ intro.addEventListener('animationend', removeIntro, { once: true }); setTimeout(removeIntro, 2800); } else { removeIntro(); }
+            try { var rm = window.matchMedia('(prefers-reduced-motion: reduce)'); if (rm && rm.matches) setTimeout(removeIntro, 50); } catch(e){}
+
+            // initialize language from storage or default to English
+            var saved = localStorage.getItem('siteLang') || 'en';
+            applyLanguage(saved);
+        })();
+    </script>
+</body>
+</html>
