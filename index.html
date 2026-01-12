@@ -3,84 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOLF - Discord Community</title>
-    <!-- Fonts & preloads for remastered site -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Poppins:wght@500;600;800&display=swap" rel="stylesheet">
-    <link rel="preload" href="bg.gif" as="image">
-    <link rel="preload" href="discord.png" as="image">
+    <title>GOLF - Next Gen Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
-            --panel: rgba(15,15,15,0.85);
-            --accent: #00ffff;
-            --muted: #bdbdbd;
-            --glass-border: rgba(0,255,255,0.12);
-            --radius: 18px;
-            --shadow: 0 18px 60px rgba(0,0,0,0.6);
-            --transition: 350ms cubic-bezier(.2,.9,.3,1);
-            --max-width: 1100px;
+            --bg: #000000;
+            --accent-cyan: #00ffff;
+            --accent-purple: #b827fc;
+            --accent-pink: #ff006e;
+            --text-primary: #ffffff;
+            --text-muted: #8b8b8b;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
-        *{margin:0;padding:0;box-sizing:border-box}
-        html,body{height:100%}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body { 
+            height: 100%; 
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
 
         body {
-            font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-            -webkit-font-smoothing:antialiased;
-            -moz-osx-font-smoothing:grayscale;
-            overflow-x: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
             background: var(--bg);
-            color: #fff;
-            line-height: 1.45;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            position: relative;
         }
 
-        a, button { color: inherit; }
-        img { display:block; max-width:100%; height:auto }
-
-        :focus { outline: 3px solid rgba(0,255,255,0.12); outline-offset: 3px; border-radius: 6px }
-
-        @media (prefers-reduced-motion: reduce) {
-            * { animation-duration: 0.001ms !important; transition: none !important }
-        }
-
-        .video-background {
+        /* Animated gradient background */
+        .bg-animated {
             position: fixed;
             inset: 0;
             z-index: 0;
             overflow: hidden;
-            pointer-events: none;
-            background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.15));
+            background: radial-gradient(ellipse at 50% 0%, rgba(0, 255, 255, 0.15), transparent 60%),
+                        radial-gradient(ellipse at 100% 50%, rgba(184, 39, 252, 0.1), transparent 50%),
+                        radial-gradient(ellipse at 0% 100%, rgba(255, 0, 110, 0.1), transparent 50%);
         }
 
-        .video-background img,
-        .video-background video {
+        .bg-animated::before,
+        .bg-animated::after {
+            content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            opacity: 0.55;
-            filter: contrast(0.96) saturate(1.02) brightness(0.95);
-            transition: opacity 450ms var(--transition);
-            will-change: transform, opacity;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
         }
 
-        .overlay {
+        .bg-animated::before {
+            background: radial-gradient(circle, var(--accent-cyan), transparent);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .bg-animated::after {
+            background: radial-gradient(circle, var(--accent-purple), transparent);
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.03), rgba(10, 10, 10, 0.6));
+            inset: 0;
             z-index: 1;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
             pointer-events: none;
+            animation: gridScroll 20s linear infinite;
         }
 
-        /* Intro overlay */
+        @keyframes gridScroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        /* Intro Animation */
         .intro {
             position: fixed;
             inset: 0;
@@ -89,277 +103,692 @@
             justify-content: center;
             background: #000;
             z-index: 9999;
+            overflow: hidden;
         }
 
-        .intro-inner {
+        .intro::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-cyan), transparent);
+            filter: blur(100px);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .intro-content {
             text-align: center;
-            will-change: transform, opacity;
+            position: relative;
+            z-index: 2;
         }
 
         .intro-title {
-            color: var(--accent);
-            font-size: clamp(2rem, 9vw, 5rem);
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.1em;
+            animation: introReveal 2s cubic-bezier(0.22, 1, 0.36, 1) forwards, gradientShift 3s ease infinite;
             opacity: 0;
-            transform: translateY(6px) scale(0.6);
-            text-shadow: 0 18px 80px rgba(0, 255, 255, 0.06);
-            animation: introSequence 2.4s cubic-bezier(.22,.9,.38,1) forwards;
+            transform: translateY(50px);
+        }
+
+        @keyframes introReveal {
+            0% { opacity: 0; transform: translateY(50px) scale(0.8); }
+            40% { opacity: 1; transform: translateY(0) scale(1); }
+            60% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-100px) scale(0.9); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .intro-subtitle {
-            color: var(--muted);
-            font-size: clamp(0.9rem, 3vw, 1.4rem);
-            margin-top: 10px;
+            font-size: clamp(1rem, 3vw, 1.8rem);
+            color: var(--text-muted);
+            margin-top: 20px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            animation: subtitleFade 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0.3s;
             opacity: 0;
-            transform: translateY(8px);
-            letter-spacing: 2px;
-            font-weight: 500;
-            animation: subtitleFade 2.4s cubic-bezier(.22,.9,.38,1) forwards;
-            animation-delay: 0.25s;
-        }
-
-        .intro-skip {
-            position: absolute;
-            top: 18px;
-            left: 18px;
-            background: rgba(255,255,255,0.04);
-            color: var(--muted);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 180ms ease, opacity 180ms ease;
-            z-index: 10001;
-        }
-
-        .intro-skip:hover { transform: translateY(-3px); }
-
-        @keyframes introSequence {
-            0% { opacity: 0; transform: translateY(6px) scale(0.6); }
-            45% { opacity: 1; transform: translateY(0) scale(1.12); }
-            70% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-140%) scale(0.85); }
         }
 
         @keyframes subtitleFade {
-            0% { opacity: 0; transform: translateY(8px); }
-            45% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-140%); }
+            0% { opacity: 0; transform: translateY(20px); }
+            40% { opacity: 1; transform: translateY(0); }
+            60% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-50px); }
+        }
+
+        .skip-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .skip-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            transform: scale(1.05);
         }
 
         body.intro-active { overflow: hidden; }
 
+        /* Main Container */
         .container {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             position: relative;
             z-index: 2;
-            transition: all 0.6s cubic-bezier(.2,.9,.3,1);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* After intro completes, move content to top like default */
-        body.intro-complete .container { justify-content: flex-start; padding-top: 40px }
+        body.intro-complete .container {
+            justify-content: flex-start;
+            padding-top: 100px;
+        }
 
-        .company-name { opacity: 0; transform: translateY(-10px); transition: opacity 0.6s ease, transform 0.6s ease }
-        body.intro-complete .company-name { opacity: 1; transform: translateY(0) }
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
 
+        body.intro-complete .music-player {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .music-player:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .music-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn::before {
+            content: '▶';
+            color: #000;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .music-btn.playing::before {
+            content: '⏸';
+        }
+
+        .music-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .music-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-icon {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Discord Button */
+        .discord-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #5865f2, #7289da);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(88, 101, 242, 0.4);
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        body.intro-complete .discord-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .discord-btn:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 20px 60px rgba(88, 101, 242, 0.6);
+        }
+
+        .discord-btn img {
+            width: 40px;
+            height: 40px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Language Switcher */
+        .lang-switch {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s ease;
+        }
+
+        body.intro-complete .lang-switch {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .lang-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* FAQ Button */
+        .faq-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 100;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            border: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+        }
+
+        body.intro-complete .faq-btn {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .faq-btn:hover {
+            transform: translateX(-50%) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+        }
+
+        /* Header */
         .header {
             text-align: center;
-            margin-bottom: 60px;
-            animation: fadeIn 1.2s ease;
+            margin-bottom: 80px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        body.intro-complete .header {
+            animation: none;
+            opacity: 1;
         }
 
         .company-name {
-            font-size: 1.8em;
-            font-weight: 300;
-            letter-spacing: 8px;
-            color: #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .author {
-            font-size: 1em;
-            color: #888;
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
-
-        .logo-section {
-            margin-bottom: 50px;
-            animation: fadeInScale 1s ease 0.3s both;
-        }
-
-        .logo {
-            width: 180px;
-            height: 180px;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            transition: all 0.4s ease;
-            object-fit: cover;
-        }
-
-        .logo:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(0, 255, 255, 0.5);
-            border-color: rgba(0, 255, 255, 0.6);
-        }
-
-        .main-content {
-            background: linear-gradient(180deg, rgba(18,18,18,0.85), rgba(10,10,10,0.7));
-            backdrop-filter: blur(18px);
-            border-radius: var(--radius);
-            padding: clamp(30px, 6vw, 64px) clamp(20px, 6vw, 64px);
-            max-width: var(--max-width);
-            width: 100%;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            animation: fadeInUp 900ms cubic-bezier(.2,.9,.3,1) 0.45s both;
-        }
-
-        h1 {
-            font-size: 4em;
-            margin-bottom: 20px;
-            color: #00ffff;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 4px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
             text-transform: uppercase;
         }
 
-        .subtitle {
-            text-align: center;
-            font-size: 1.2em;
-            color: #999;
-            margin-bottom: 50px;
-            line-height: 1.8;
-            font-weight: 300;
+        /* Logo */
+        .logo-section {
+            margin-bottom: 80px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.4s;
         }
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-            margin: 50px 0;
+        body.intro-complete .logo-section {
+            animation: none;
+            opacity: 1;
         }
 
-        .feature {
-            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(10, 10, 10, 0.8));
-            padding: 35px 25px;
-            border-radius: 15px;
-            text-align: center;
-            transition: all 0.4s ease;
-            border: 1px solid rgba(0, 255, 255, 0.1);
+        .logo-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+            border-radius: 50%;
+            filter: blur(30px);
+            opacity: 0.6;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .logo {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .logo-container:hover .logo {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--accent-cyan);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: clamp(40px, 8vw, 80px);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.6s;
+            margin-bottom: 60px;
         }
 
-        .feature::before {
+        body.intro-complete .main-content {
+            animation: none;
+            opacity: 1;
+        }
+
+        .main-content::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            animation: shimmer 3s infinite;
         }
 
-        .feature:hover::before {
-            left: 100%;
+        @keyframes shimmer {
+            100% { left: 100%; }
         }
 
-        .feature:hover {
-            transform: translateY(-10px);
-            border-color: rgba(0, 255, 255, 0.4);
-            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.2);
-        }
-
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 20px;
-            filter: brightness(0) saturate(100%) invert(71%) sepia(85%) saturate(2468%) hue-rotate(143deg) brightness(103%) contrast(106%);
-            transition: transform 0.3s ease;
-        }
-
-        .feature:hover .feature-icon {
-            transform: scale(1.1);
-        }
-
-        .feature h3 {
-            font-size: 1.4em;
-            margin-bottom: 12px;
-            color: #00ffff;
-            font-weight: 600;
-        }
-
-        .feature p {
-            color: #888;
-            font-size: 1em;
-            line-height: 1.6;
-            font-weight: 300;
-        }
-
-        .join-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #00ffff, #00cccc);
-            color: #0a0a0a;
-            padding: 22px 70px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 1.3em;
-            font-weight: 700;
-            margin-top: 40px;
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.4);
-            letter-spacing: 1px;
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        .join-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.6);
-            background: linear-gradient(135deg, #00cccc, #00ffff);
+        .subtitle {
+            text-align: center;
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: var(--text-muted);
+            margin-bottom: 80px;
+            line-height: 1.8;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .button-container { text-align:center }
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
 
-        /* Top-fixed Discord image button */
-        .discord-top-button { position: fixed; top: 18px; right: 18px; z-index: 10010; width:64px; height:64px; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#5865f2,#2f3136); border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.6); padding:6px; transition: transform 0.18s var(--transition), box-shadow 0.18s var(--transition); cursor:pointer }
-        .discord-top-button img{ width:100%; height:100%; object-fit:contain; display:block }
-        .discord-top-button:hover{ transform:translateY(-4px) scale(1.03); box-shadow:0 18px 46px rgba(20,20,20,0.5) }
-        .discord-top-button:focus{ box-shadow: 0 0 0 4px rgba(0,255,255,0.06), 0 18px 46px rgba(20,20,20,0.4) }
+        .feature {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
 
-        /* Language switcher */
-        .lang-switch { position: fixed; top: 18px; left: 18px; z-index:10020; display:flex; align-items:center; gap:8px; opacity:0; transform:translateY(-6px); transition: all 240ms var(--transition); pointer-events:none }
-        .intro-complete .lang-switch { opacity:1; transform:none; pointer-events:auto }
-        .lang-btn { background: rgba(255,255,255,0.03); color:var(--muted); border: none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600 }
-        .lang-btn:hover { transform: translateY(-2px) }
-        .lang-menu { display:none; position:absolute; top:44px; left:0; background: rgba(10,10,10,0.98); border:1px solid rgba(255,255,255,0.04); padding:8px; border-radius:10px; box-shadow: 0 14px 40px rgba(0,0,0,0.6) }
-        .lang-menu button { display:block; background:transparent; color:#fff; border:none; padding:8px 12px; text-align:left; width:100%; cursor:pointer }
-        .lang-menu button:hover { background: rgba(255,255,255,0.02) }
-        .lang-switch[aria-expanded="true"] .lang-menu { display:block }
+        .feature::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
 
-        @keyframes fadeIn{ from{ opacity:0; transform:translateY(-30px)} to{ opacity:1; transform:translateY(0)} }
+        .feature:hover::before {
+            opacity: 0.1;
+        }
 
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .feature:hover {
+            transform: translateY(-15px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .feature:hover .feature-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .feature-icon img {
+            width: 100%;
+            height: 100%;
+            filter: brightness(0) saturate(100%) invert(71%) sepia(85%) saturate(2468%) hue-rotate(143deg) brightness(103%) contrast(106%);
+        }
+
+        .feature h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: clamp(40px, 8vw, 80px);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.8s;
+            margin-bottom: 100px;
+        }
+
+        body.intro-complete .faq-section {
+            animation: none;
+            opacity: 1;
+        }
+
+        .faq-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .faq-question {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .faq-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faq-answer-content {
+            padding: 0 30px 25px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        /* CTA Button */
+        .cta-container {
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 22px 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: #000;
+            border-radius: 50px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 15px 50px rgba(0, 255, 255, 0.4);
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .cta-btn:hover::before {
+            opacity: 1;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 25px 80px rgba(0, 255, 255, 0.6);
+        }
+
+        .cta-btn span {
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes fadeInUp {
@@ -373,231 +802,409 @@
             }
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-            .company-name {
-                font-size: 1.3em;
-                letter-spacing: 4px;
+            .container {
+                padding: 40px 15px;
             }
 
-            h1 {
-                font-size: 2.5em;
-                letter-spacing: 2px;
+            body.intro-complete .container {
+                padding-top: 60px;
             }
-            
-            .main-content {
+
+            .discord-btn, .lang-switch {
+                top: 15px;
+            }
+
+            .discord-btn {
+                right: 15px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .lang-switch {
+                left: 15px;
+            }
+
+            .header {
+                margin-bottom: 50px;
+            }
+
+            .logo-section {
+                margin-bottom: 50px;
+            }
+
+            .logo-container {
+                width: 160px;
+                height: 160px;
+            }
+
+            .main-content, .faq-section {
                 padding: 40px 25px;
+                border-radius: 30px;
             }
-            
+
             .features {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
-            .join-button {
-                padding: 18px 50px;
-                font-size: 1.1em;
+
+            .cta-btn {
+                padding: 18px 40px;
+                font-size: 1.1rem;
             }
 
-            .logo {
-                width: 140px;
-                height: 140px;
+            .music-player {
+                bottom: 15px;
+                right: 15px;
+                padding: 12px 15px;
+            }
+
+            .volume-slider {
+                width: 60px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body class="intro-active">
-    <div class="intro" role="dialog" aria-modal="true" aria-label="Intro" data-intro>
-        <div class="intro-inner">
+    <!-- Intro Screen -->
+    <div class="intro">
+        <div class="intro-content">
             <div class="intro-title">LB4 COMPANY</div>
             <div class="intro-subtitle">Presents...</div>
         </div>
-        <button class="intro-skip" aria-label="Skip intro">Skip</button>
+        <button class="skip-btn" onclick="skipIntro()">Skip</button>
     </div>
 
-    <div class="video-background" aria-hidden="true">
-        <img src="bg.gif" alt="Background animation" aria-hidden="true" loading="eager">
-    </div>
-    <div class="overlay"></div>
+    <!-- Background Elements -->
+    <div class="bg-animated"></div>
+    <div class="grid-overlay"></div>
 
-    <a href="https://discord.gg/MVdrHMxE3m" class="discord-top-button" target="_blank" rel="noopener noreferrer" aria-label="Join Discord">
+    <!-- Music Player -->
+    <div class="music-player">
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()"></button>
+        <div class="music-info">
+            <div class="music-title">Background Music</div>
+            <div class="volume-control">
+                <span class="volume-icon">🔊</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden audio element -->
+    <audio id="bgMusic" loop>
+        <source src="bg.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Discord Button -->
+    <a href="https://discord.gg/MVdrHMxE3m" class="discord-btn" target="_blank" rel="noopener noreferrer">
         <img src="discord.png" alt="Discord">
     </a>
 
-    <!-- Language switcher (appears after intro) -->
-    <div class="lang-switch" aria-hidden="true">
-        <button class="lang-btn" aria-haspopup="true" aria-expanded="false" aria-label="Language menu">ENG ▾</button>
-        <div class="lang-menu" role="menu" aria-hidden="true">
-            <button role="menuitem" data-lang="en">English</button>
-            <button role="menuitem" data-lang="fr">Français</button>
-            <button role="menuitem" data-lang="ar">العربية</button>
-        </div>
+    <!-- Language Switcher -->
+    <div class="lang-switch">
+        <button class="lang-btn" onclick="toggleLang()">ENG ▾</button>
     </div>
 
+    <!-- FAQ Button -->
+    <button class="faq-btn" onclick="scrollToFAQ()">❓ FAQ</button>
+
+    <!-- Main Container -->
     <div class="container">
         <div class="header">
-            <div class="company-name" data-i18n="companyName">LB4 COMPANY</div>
-            <div class="author" data-i18n="author">By: Leo Mh</div>
+            <div class="company-name">LB4 COMPANY</div>
+            <div class="author">By: Leo Mh</div>
         </div>
 
         <div class="logo-section">
-            <img src="logo.png" alt="GOLF Logo" class="logo">
+            <div class="logo-container">
+                <img src="logo.png" alt="GOLF Logo" class="logo">
+            </div>
         </div>
 
         <div class="main-content">
-            <h1 data-i18n="headline">GOLF</h1>
-            <p class="subtitle" data-i18n="subtitle">
+            <h1>GOLF</h1>
+            <p class="subtitle">
                 A modern community for gaming, communication and entertainment.<br>
                 Join us for a unique experience.
             </p>
 
             <div class="features">
-                <div class="feature" data-index="0">
-                    <img src="games.png" class="feature-icon" alt="Games">
-                    <h3 data-i18n="features.0.title">Play with us</h3>
-                    <p data-i18n="features.0.text">Enjoy top games with an active, fun community.</p>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <img src="games.png" alt="Games">
+                    </div>
+                    <h3>Play with us</h3>
+                    <p>Enjoy top games with an active, fun community.</p>
                 </div>
 
-                <div class="feature" data-index="1">
-                    <img src="https://cdn-icons-png.flaticon.com/512/681/681494.png" alt="Friends" class="feature-icon">
-                    <h3 data-i18n="features.1.title">Make friends</h3>
-                    <p data-i18n="features.1.text">Build new lasting friendships with members worldwide.</p>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/681/681494.png" alt="Friends">
+                    </div>
+                    <h3>Make friends</h3>
+                    <p>Build new lasting friendships with members worldwide.</p>
                 </div>
 
-                <div class="feature" data-index="2">
-                    <img src="event.png" alt="Events" class="feature-icon">
-                    <h3 data-i18n="features.2.title">Exclusive events</h3>
-                    <p data-i18n="features.2.text">Participate in contests and special events.</p>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <img src="event.png" alt="Events">
+                    </div>
+                    <h3>Exclusive events</h3>
+                    <p>Participate in contests and special events.</p>
                 </div>
 
-                <div class="feature" data-index="3">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2917/2917995.png" alt="Relax" class="feature-icon">
-                    <h3 data-i18n="features.3.title">Relax & enjoy</h3>
-                    <p data-i18n="features.3.text">A cozy space for chatting and relaxing.</p>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2917/2917995.png" alt="Relax">
+                    </div>
+                    <h3>Relax & enjoy</h3>
+                    <p>A cozy space for chatting and relaxing.</p>
                 </div>
-                <div class="feature" data-index="4">
-                    <img src="verify.png" alt="Secured" class="feature-icon">
-                    <h3 data-i18n="features.4.title">Secured</h3>
-                    <p data-i18n="features.4.text">A trustworthy and secure community.</p>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <img src="verify.png" alt="Secured">
+                    </div>
+                    <h3>Secured</h3>
+                    <p>A trustworthy and secure community.</p>
                 </div>
-                <div class="feature" data-index="5">
-                    <img src="verified.png" alt="Verify System" class="feature-icon">
-                    <h3 data-i18n="features.5.title">Verify system</h3>
-                    <p data-i18n="features.5.text">Identity verification system for a secure experience.</p>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <img src="verified.png" alt="Verify System">
+                    </div>
+                    <h3>Verify system</h3>
+                    <p>Identity verification system for a secure experience.</p>
                 </div>
             </div>
 
-            <div class="button-container">
-                <!-- Discord button moved to top-fixed image (discord.png) -->
-            </div> 
+            <div class="cta-container">
+                <a href="https://discord.gg/MVdrHMxE3m" class="cta-btn" target="_blank" rel="noopener noreferrer">
+                    <span>Join Now</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 class="faq-title">FAQ</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What is GOLF?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            GOLF is a vibrant gaming community where players come together to enjoy their favorite games, make new friends, and relax. Whether you're into competitive gaming, casual play, or just want a place to hang out and chat, GOLF provides the perfect environment for gamers of all types to connect and have fun.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I join the GOLF community?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Joining is super easy! Just click the "Join Now" button in the overview section above, or click the Discord logo button in the top right corner of the page. Both will take you directly to our Discord server where you can start your GOLF journey immediately!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What games do you play in GOLF?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We play everything! Whether you're into FPS games, RPGs, MOBAs, battle royales, or indie titles, there's something for everyone. Head to our "find-players" channel, mention the game you want to play, and you'll quickly meet community members who share your gaming interests. From AAA titles to hidden gems, our diverse community covers it all!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I get verified in the server?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Getting verified is simple! When you join the server, head over to the "verify" channel. Our verification bot has clear instructions explaining the entire process step-by-step. Just follow the prompts, and you'll be verified in no time. This helps us keep the community safe and secure for everyone!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Are there age restrictions?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Yes, GOLF is a 15+ community. All members must be at least 15 years old to join and participate. This helps us maintain an appropriate environment and ensure conversations and content are suitable for our community members.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What kind of events do you host?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            GOLF hosts a wide variety of exciting events! From competitive gaming tournaments and custom game nights to community movie sessions, giveaways, and special seasonal celebrations. We also organize voice chat hangouts, creative contests, trivia nights, and collaborative gaming sessions. There's always something fun happening, so keep an eye on our events channel to never miss out!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How can I become a moderator or staff member?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We love dedicated community members! To be considered for a staff position, you should be actively participating in GOLF for more than a week. Once you've established yourself as a positive member of the community, open a ticket and submit your staff application request. Our team will review your activity, contributions, and fit for the role.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What are the server rules?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            All server rules are clearly outlined in our dedicated "rules" channel. When you join GOLF, make sure to read through them carefully to understand our community guidelines, what's expected from members, and what behavior is not tolerated. Following these rules helps keep GOLF a fun, safe, and welcoming space for everyone!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I report a problem or contact support?</span>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            If you encounter any issues, have concerns, or need assistance, simply open a ticket through our ticketing system. Once you create a ticket, our staff team will move you to a private support channel where you can discuss any problems, ask questions, or share feedback. We're here to help and want to ensure you have the best experience possible in GOLF!
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        (function(){
-            /* Intro handling + language system */
-            var intro = document.querySelector('.intro');
-            var skipBtn = document.querySelector('.intro-skip');
-            var removed = false;
+        let introRemoved = false;
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        let isPlaying = true;
 
-            // Translation strings
-            var i18n = {
-                en: {
-                    companyName: 'LB4 COMPANY',
-                    author: 'By: Leo Mh',
-                    headline: 'GOLF',
-                    subtitle: 'A modern community for gaming, communication and entertainment.<br>Join us for a unique experience.',
-                    features: [
-                        ['Play with us', 'Enjoy top games with an active, fun community.'],
-                        ['Make friends', 'Build new lasting friendships with members worldwide.'],
-                        ['Exclusive events', 'Participate in contests and special events.'],
-                        ['Relax & enjoy', 'A cozy space for chatting and relaxing.'],
-                        ['Secured', 'A trustworthy and secure community.'],
-                        ['Verify system', 'Identity verification system for a secure experience.']
-                    ]
-                },
-                fr: {
-                    companyName: 'LB4 COMPANY',
-                    author: 'Par: Leo Mh',
-                    headline: 'GOLF',
-                    subtitle: 'Une communauté moderne pour les jeux, la communication et le divertissement.<br>Rejoignez-nous pour une expérience unique.',
-                    features: [
-                        ['Jouez avec nous', 'Profitez des meilleurs jeux avec une communauté active et amusante.'],
-                        ['Faites des amis', 'Créez de nouvelles amitiés durables avec des membres du monde entier.'],
-                        ['Événements exclusifs', 'Participez à des concours et événements spéciaux.'],
-                        ['Détendez-vous & profitez', 'Un espace convivial pour discuter et se détendre.'],
-                        ['Vérifié', 'Une communauté fiable et sécurisée.'],
-                        ['Système de vérification', 'Système de vérification d\'identité pour une expérience sécurisée.']
-                    ]
-                },
-                ar: {
-                    companyName: 'شركة LB4',
-                    author: 'بواسطة: ليو إم إتش',
-                    headline: 'جولف',
-                    subtitle: 'مجتمع حديث للألعاب والتواصل والترفيه.<br>انضم إلينا لتجربة فريدة.',
-                    features: [
-                        ['العب معنا', 'استمتع بأفضل الألعاب مع مجتمع نشط وممتع.'],
-                        ['تعرف على أصدقاء', 'بناء صداقات جديدة ودائمة مع أعضاء من كل مكان.'],
-                        ['فعاليات حصرية', 'شارك في المسابقات والفعاليات المميزة.'],
-                        ['استرح واستمتع', 'مساحة مريحة للدردشة والاسترخاء.'],
-                        ['موثوق', 'مجتمع آمن وموثوق.'],
-                        ['نظام تحقق', 'نظام تحقق من الهوية لتجربة آمنة']
-                    ]
+        function skipIntro() {
+            if (introRemoved) return;
+            introRemoved = true;
+            
+            const intro = document.querySelector('.intro');
+            document.body.classList.remove('intro-active');
+            document.body.classList.add('intro-complete');
+            
+            if (intro) {
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    if (intro.parentNode) intro.parentNode.removeChild(intro);
+                    // Auto-play music after intro with user interaction fallback
+                    const playPromise = bgMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            musicBtn.classList.add('playing');
+                            isPlaying = true;
+                        }).catch(err => {
+                            console.log('Audio autoplay prevented by browser. User must click play.');
+                            isPlaying = false;
+                        });
+                    }
+                }, 300);
+            }
+        }
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                bgMusic.play().catch(err => console.log('Audio play failed:', err));
+                musicBtn.classList.add('playing');
+                isPlaying = true;
+            }
+        }
+
+        // Volume control
+        volumeSlider.addEventListener('input', function() {
+            bgMusic.volume = this.value / 100;
+        });
+
+        // Set initial volume
+        bgMusic.volume = 0.5;
+
+        // Scroll to FAQ section
+        function scrollToFAQ() {
+            const faqSection = document.querySelector('.faq-section');
+            if (faqSection) {
+                faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // FAQ Toggle
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const allItems = document.querySelectorAll('.faq-item');
+            
+            // Close all other items
+            allItems.forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
                 }
-            };
+            });
+            
+            // Toggle current item
+            faqItem.classList.toggle('active');
+        }
 
-            function applyLanguage(lang){
-                var data = i18n[lang] || i18n.en;
-                // set lang & dir on document
-                document.documentElement.lang = lang;
-                document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-                // apply texts
-                var elCompany = document.querySelector('[data-i18n="companyName"]'); if (elCompany) elCompany.textContent = data.companyName;
-                var elAuthor = document.querySelector('[data-i18n="author"]'); if (elAuthor) elAuthor.textContent = data.author;
-                var elHeadline = document.querySelector('[data-i18n="headline"]'); if (elHeadline) elHeadline.textContent = data.headline;
-                var elSubtitle = document.querySelector('[data-i18n="subtitle"]'); if (elSubtitle) elSubtitle.innerHTML = data.subtitle;
-                // features
-                var features = document.querySelectorAll('.feature');
-                features.forEach(function(f, idx){
-                    var t = data.features[idx];
-                    if (!t) return;
-                    var h = f.querySelector('h3'); if (h) h.textContent = t[0];
-                    var p = f.querySelector('p'); if (p) p.textContent = t[1];
-                });
-                // update lang button label
-                var btn = document.querySelector('.lang-btn'); if (btn) btn.textContent = (lang==='en'? 'ENG' : (lang==='fr'? 'FRA' : 'ع')); 
-                // save
-                localStorage.setItem('siteLang', lang);
-            }
+        function toggleLang() {
+            alert('Language switching coming soon!');
+        }
 
-            // language menu interactions
-            var langSwitch = document.querySelector('.lang-switch');
-            var langBtn = document.querySelector('.lang-btn');
-            var langMenu = document.querySelector('.lang-menu');
-            if (langBtn){
-                langBtn.addEventListener('click', function(){
-                    var expanded = langBtn.getAttribute('aria-expanded') === 'true';
-                    langBtn.setAttribute('aria-expanded', String(!expanded));
-                    langSwitch.setAttribute('aria-expanded', String(!expanded));
-                    langMenu.setAttribute('aria-hidden', String(expanded));
-                });
-            }
-            if (langMenu){
-                langMenu.addEventListener('click', function(e){
-                    var t = e.target; if (t && t.dataset && t.dataset.lang){ applyLanguage(t.dataset.lang); langBtn.setAttribute('aria-expanded','false'); langSwitch.setAttribute('aria-expanded','false'); langMenu.setAttribute('aria-hidden','true'); }
-                });
-            }
+        // Auto-remove intro after animation
+        setTimeout(skipIntro, 2800);
 
-            function removeIntro(){ if (removed) return; removed = true; document.body.classList.add('intro-complete'); document.body.classList.remove('intro-active'); if (intro && intro.parentNode) intro.parentNode.removeChild(intro); try { window.scrollTo({ top:0, behavior:'instant' }); } catch(e){ window.scrollTo(0,0); } }
-            document.body.classList.add('intro-active');
-            if (skipBtn) skipBtn.addEventListener('click', removeIntro);
-            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') removeIntro(); });
-            if (intro){ intro.addEventListener('animationend', removeIntro, { once: true }); setTimeout(removeIntro, 2800); } else { removeIntro(); }
-            try { var rm = window.matchMedia('(prefers-reduced-motion: reduce)'); if (rm && rm.matches) setTimeout(removeIntro, 50); } catch(e){}
+        // Skip on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') skipIntro();
+        });
 
-            // initialize language from storage or default to English
-            var saved = localStorage.getItem('siteLang') || 'en';
-            applyLanguage(saved);
-        })();
+        // Reduced motion check
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (prefersReducedMotion.matches) {
+            setTimeout(skipIntro, 50);
+        }
     </script>
 </body>
 </html>
